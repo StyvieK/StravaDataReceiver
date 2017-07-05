@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="StravaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Activity">
+          <Key>
+            <PropertyRef Name="ActivityId" />
+          </Key>
+          <Property Name="ActivityId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" />
+          <Property Name="Date" Type="date" />
+          <Property Name="Distance" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ActivityType" Type="varchar" MaxLength="50" />
+          <Property Name="GearId" Type="varchar" MaxLength="50" />
+          <Property Name="AverageCadence" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AverageHeartRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="TimeStarted" Type="datetime" />
+          <Property Name="TimeEnded" Type="datetime" />
+          <Property Name="ElevationGain" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="Gear">
+          <Key>
+            <PropertyRef Name="GearId" />
+          </Key>
+          <Property Name="GearId" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityContainer Name="StravaModelStoreContainer">
+          <EntitySet Name="Activity" EntityType="Self.Activity" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Gear" EntityType="Self.Gear" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="StravaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Activity">
+          <Key>
+            <PropertyRef Name="ActivityId" />
+          </Key>
+          <Property Name="ActivityId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="Distance" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ActivityType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GearId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AverageCadence" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AverageHeartRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="TimeStarted" Type="DateTime" Precision="3" />
+          <Property Name="TimeEnded" Type="DateTime" Precision="3" />
+          <Property Name="ElevationGain" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="Gear">
+          <Key>
+            <PropertyRef Name="GearId" />
+          </Key>
+          <Property Name="GearId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityContainer Name="StravaEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Activities" EntityType="Self.Activity" />
+          <EntitySet Name="Gears" EntityType="Self.Gear" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="StravaModelStoreContainer" CdmEntityContainer="StravaEntities">
+          <EntitySetMapping Name="Activities">
+            <EntityTypeMapping TypeName="StravaModel.Activity">
+              <MappingFragment StoreEntitySet="Activity">
+                <ScalarProperty Name="ActivityId" ColumnName="ActivityId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Distance" ColumnName="Distance" />
+                <ScalarProperty Name="ActivityType" ColumnName="ActivityType" />
+                <ScalarProperty Name="GearId" ColumnName="GearId" />
+                <ScalarProperty Name="AverageCadence" ColumnName="AverageCadence" />
+                <ScalarProperty Name="AverageHeartRate" ColumnName="AverageHeartRate" />
+                <ScalarProperty Name="TimeStarted" ColumnName="TimeStarted" />
+                <ScalarProperty Name="TimeEnded" ColumnName="TimeEnded" />
+                <ScalarProperty Name="ElevationGain" ColumnName="ElevationGain" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Gears">
+            <EntityTypeMapping TypeName="StravaModel.Gear">
+              <MappingFragment StoreEntitySet="Gear">
+                <ScalarProperty Name="GearId" ColumnName="GearId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
