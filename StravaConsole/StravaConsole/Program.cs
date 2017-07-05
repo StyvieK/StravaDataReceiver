@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Strava.Athletes;
+using Strava.Authentication;
+using Strava.Clients;
+using Strava.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
