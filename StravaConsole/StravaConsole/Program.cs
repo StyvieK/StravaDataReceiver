@@ -42,7 +42,7 @@ namespace StravaConsole
 
             #region Activities
 
-            var activities = client.Activities.GetActivities(new DateTime(2013, 1, 1), DateTime.Now);
+            var activities = client.Activities.GetActivities(new DateTime(2011, 11, 1), DateTime.Now);
 
             //var activitiesAsync = await client.Activities.GetActivitiesAsync(new DateTime(2014, 1, 1), DateTime.Now);
 
