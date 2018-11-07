@@ -46,12 +46,12 @@ namespace StravaConsole
                 LastActivity = (from v in context.Activities select v.TimeStarted).Max();               
             }
             if (!LastActivity.HasValue) {
-                LastActivity = DateTime.Parse("2000-01-01");
+                LastActivity = DateTime.Parse("2009-01-01");
             }
 
             #region Activities
 
-            var activities = client.Activities.GetActivities(LastActivity.Value, DateTime.Now).Take(10).OrderBy(activity  => activity.StartDate);
+            var activities = client.Activities.GetActivities(LastActivity.Value, DateTime.Now);
             
             using (StravaEntities context = new StravaEntities())
             {
@@ -78,8 +78,14 @@ namespace StravaConsole
                     act.ElapsedSeconds = item.ElapsedTime;
                     act.MovingSeconds = item.MovingTime;
                     act.TimeEnded = act.TimeStarted.Value.AddSeconds(act.ElapsedSeconds.Value);
+                    act.Distance = (decimal)item.Distance;
+                    act.MovingTime = item.MovingTimeSpan;
+                    act.ElapsedTime = item.ElapsedTimeSpan;
+                    var DistKm = (decimal)item.Distance / 1000;
+                    if (DistKm != 0) {
+                        act.AveragePace = new TimeSpan((long)(item.ElapsedTimeSpan.Ticks / DistKm));
+                    }
                     
-
                     var gear = (from g in context.Gears where g.GearId == item.GearId select g).FirstOrDefault();
 
                     if (gear == null)
@@ -109,39 +115,44 @@ namespace StravaConsole
                         act.Date = d;
                     }
 
-                    act.Distance = (decimal)item.Distance;
+                    
 
                     if (NewAct)
                         context.Activities.Add(act);
 
-                    context.SaveChanges();
+                   
 
-                    List<ActivityLap> laps = await client.Activities.GetActivityLapsAsync(act.ActivityId.ToString());
+                    if (false) {
+                        List<ActivityLap> laps = await client.Activities.GetActivityLapsAsync(act.ActivityId.ToString());
 
-                    context.Laps.RemoveRange(context.Laps.Where(x => x.ActivityId == act.ActivityId));
-                    context.SaveChanges();
-
-                    foreach (var lap in laps)
-                    {
-                        Lap l = new Lap();
-                        l.ActivityId = act.ActivityId;
-                        l.LapId = lap.LapIndex;
-                        l.Id = (int)lap.Id;
-                        l.Start = lap.Start;
-                        l.ElapsedTime = lap.ElapsedTime;
-                        l.MovingTime = lap.MovingTime;
-                        l.TotalElevationGain = (decimal)lap.TotalElevationGain;
-                        //l.StartLocal = lap.StartLocal;
-                        l.StartIndex = lap.StartIndex;
-                        l.EndIndex = lap.EndIndex;
-                        l.MaxHeartRate = (decimal)lap.MaxHeartrate;
-                        l.MaxSpeed = (decimal)lap.MaxSpeed;
-                        l.Distance = (decimal)lap.Distance;
-                        context.Laps.Add(l);
+                        context.Laps.RemoveRange(context.Laps.Where(x => x.ActivityId == act.ActivityId));
                         context.SaveChanges();
+
+                        foreach (var lap in laps)
+                        {
+                            Lap l = new Lap();
+                            l.ActivityId = act.ActivityId;
+                            l.LapId = lap.LapIndex;
+                            l.Id = (int)lap.Id;
+                            l.Start = lap.Start;
+                            l.ElapsedTime = lap.ElapsedTime;
+                            l.MovingTime = lap.MovingTime;
+                            l.TotalElevationGain = (decimal)lap.TotalElevationGain;
+                            //l.StartLocal = lap.StartLocal;
+                            l.StartIndex = lap.StartIndex;
+                            l.EndIndex = lap.EndIndex;
+                            l.MaxHeartRate = (decimal)lap.MaxHeartrate;
+                            l.MaxSpeed = (decimal)lap.MaxSpeed;
+                            l.Distance = (decimal)lap.Distance;
+                            context.Laps.Add(l);
+                            context.SaveChanges();
+                        }
                     }
+                    
                     Console.WriteLine(DateConverter.ConvertIsoTimeToDateTime(item.StartDateLocal));
                 }
+                context.SaveChanges();
+
             }
 
             //Console.WriteLine("Async: " + activitiesAsync.Count);
