@@ -27,5 +27,6 @@ namespace StravaConsole
     
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Gear> Gears { get; set; }
+        public virtual DbSet<Lap> Laps { get; set; }
     }
 }

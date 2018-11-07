@@ -25,5 +25,10 @@ namespace StravaConsole
         public Nullable<System.DateTime> TimeStarted { get; set; }
         public Nullable<System.DateTime> TimeEnded { get; set; }
         public Nullable<decimal> ElevationGain { get; set; }
+        public Nullable<int> ElapsedSeconds { get; set; }
+        public Nullable<int> MovingSeconds { get; set; }
+        public Nullable<System.TimeSpan> ElapsedTime { get; set; }
+        public Nullable<System.TimeSpan> MovingTime { get; set; }
+        public Nullable<System.TimeSpan> AveragePace { get; set; }
     }
 }

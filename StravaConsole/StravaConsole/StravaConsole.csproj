@@ -63,6 +63,9 @@
     <Compile Include="Gear.cs">
       <DependentUpon>StravaModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Lap.cs">
+      <DependentUpon>StravaModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StravaModel.Context.cs">
@@ -82,7 +85,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <EntityDeploy Include="StravaModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>

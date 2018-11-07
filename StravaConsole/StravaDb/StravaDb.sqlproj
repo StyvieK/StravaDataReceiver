@@ -65,5 +65,6 @@
   <ItemGroup>
     <Build Include="dbo\Tables\Gear.sql" />
     <Build Include="dbo\Tables\Activity.sql" />
+    <Build Include="dbo\Tables\Laps.sql" />
   </ItemGroup>
 </Project>

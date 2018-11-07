@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="StravaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="StravaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Activity">
           <Key>
             <PropertyRef Name="ActivityId" />
@@ -20,6 +20,11 @@
           <Property Name="TimeStarted" Type="datetime" />
           <Property Name="TimeEnded" Type="datetime" />
           <Property Name="ElevationGain" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ElapsedSeconds" Type="int" />
+          <Property Name="MovingSeconds" Type="int" />
+          <Property Name="ElapsedTime" Type="time" Precision="7" />
+          <Property Name="MovingTime" Type="time" Precision="7" />
+          <Property Name="AveragePace" Type="time" Precision="7" />
         </EntityType>
         <EntityType Name="Gear">
           <Key>
@@ -28,12 +33,36 @@
           <Property Name="GearId" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="Laps">
+          <Key>
+            <PropertyRef Name="ActivityId" />
+            <PropertyRef Name="LapId" />
+          </Key>
+          <Property Name="ActivityId" Type="int" Nullable="false" />
+          <Property Name="LapId" Type="int" Nullable="false" />
+          <Property Name="Start" Type="datetime" />
+          <Property Name="Id" Type="int" />
+          <Property Name="ResourceState" Type="int" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="ElapsedTime" Type="int" />
+          <Property Name="MovingTime" Type="int" />
+          <Property Name="ElapsedTimespan" Type="int" />
+          <Property Name="MovingTimespan" Type="int" />
+          <Property Name="StartLocal" Type="datetime" />
+          <Property Name="MaxHeartRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Distance" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="StartIndex" Type="int" />
+          <Property Name="EndIndex" Type="int" />
+          <Property Name="TotalElevationGain" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AveSpeed" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="MaxSpeed" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
         <EntityContainer Name="StravaModelStoreContainer">
           <EntitySet Name="Activity" EntityType="Self.Activity" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Gear" EntityType="Self.Gear" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Laps" EntityType="Self.Laps" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="StravaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -52,6 +81,11 @@
           <Property Name="TimeStarted" Type="DateTime" Precision="3" />
           <Property Name="TimeEnded" Type="DateTime" Precision="3" />
           <Property Name="ElevationGain" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ElapsedSeconds" Type="Int32" />
+          <Property Name="MovingSeconds" Type="Int32" />
+          <Property Name="ElapsedTime" Type="Time" Precision="7" />
+          <Property Name="MovingTime" Type="Time" Precision="7" />
+          <Property Name="AveragePace" Type="Time" Precision="7" />
         </EntityType>
         <EntityType Name="Gear">
           <Key>
@@ -63,7 +97,32 @@
         <EntityContainer Name="StravaEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Activities" EntityType="Self.Activity" />
           <EntitySet Name="Gears" EntityType="Self.Gear" />
+          <EntitySet Name="Laps" EntityType="StravaModel.Lap" />
         </EntityContainer>
+        <EntityType Name="Lap">
+          <Key>
+            <PropertyRef Name="ActivityId" />
+            <PropertyRef Name="LapId" />
+          </Key>
+          <Property Name="ActivityId" Type="Int32" Nullable="false" />
+          <Property Name="LapId" Type="Int32" Nullable="false" />
+          <Property Name="Start" Type="DateTime" Precision="3" />
+          <Property Name="Id" Type="Int32" />
+          <Property Name="ResourceState" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ElapsedTime" Type="Int32" />
+          <Property Name="MovingTime" Type="Int32" />
+          <Property Name="ElapsedTimespan" Type="Int32" />
+          <Property Name="MovingTimespan" Type="Int32" />
+          <Property Name="StartLocal" Type="DateTime" Precision="3" />
+          <Property Name="MaxHeartRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Distance" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="StartIndex" Type="Int32" />
+          <Property Name="EndIndex" Type="Int32" />
+          <Property Name="TotalElevationGain" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AveSpeed" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="MaxSpeed" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -73,6 +132,11 @@
           <EntitySetMapping Name="Activities">
             <EntityTypeMapping TypeName="StravaModel.Activity">
               <MappingFragment StoreEntitySet="Activity">
+                <ScalarProperty Name="AveragePace" ColumnName="AveragePace" />
+                <ScalarProperty Name="MovingTime" ColumnName="MovingTime" />
+                <ScalarProperty Name="ElapsedTime" ColumnName="ElapsedTime" />
+                <ScalarProperty Name="MovingSeconds" ColumnName="MovingSeconds" />
+                <ScalarProperty Name="ElapsedSeconds" ColumnName="ElapsedSeconds" />
                 <ScalarProperty Name="ActivityId" ColumnName="ActivityId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
@@ -92,6 +156,30 @@
               <MappingFragment StoreEntitySet="Gear">
                 <ScalarProperty Name="GearId" ColumnName="GearId" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Laps">
+            <EntityTypeMapping TypeName="StravaModel.Lap">
+              <MappingFragment StoreEntitySet="Laps">
+                <ScalarProperty Name="MaxSpeed" ColumnName="MaxSpeed" />
+                <ScalarProperty Name="AveSpeed" ColumnName="AveSpeed" />
+                <ScalarProperty Name="TotalElevationGain" ColumnName="TotalElevationGain" />
+                <ScalarProperty Name="EndIndex" ColumnName="EndIndex" />
+                <ScalarProperty Name="StartIndex" ColumnName="StartIndex" />
+                <ScalarProperty Name="Distance" ColumnName="Distance" />
+                <ScalarProperty Name="MaxHeartRate" ColumnName="MaxHeartRate" />
+                <ScalarProperty Name="StartLocal" ColumnName="StartLocal" />
+                <ScalarProperty Name="MovingTimespan" ColumnName="MovingTimespan" />
+                <ScalarProperty Name="ElapsedTimespan" ColumnName="ElapsedTimespan" />
+                <ScalarProperty Name="MovingTime" ColumnName="MovingTime" />
+                <ScalarProperty Name="ElapsedTime" ColumnName="ElapsedTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ResourceState" ColumnName="ResourceState" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Start" ColumnName="Start" />
+                <ScalarProperty Name="LapId" ColumnName="LapId" />
+                <ScalarProperty Name="ActivityId" ColumnName="ActivityId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

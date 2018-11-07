@@ -1,4 +1,5 @@
-﻿using Strava.Athletes;
+﻿using Strava.Activities;
+using Strava.Athletes;
 using Strava.Authentication;
 using Strava.Clients;
 using Strava.Utilities;
@@ -40,12 +41,18 @@ namespace StravaConsole
             AthleteSummary a = await client.Athletes.GetAthleteAsync();
             Console.WriteLine("{0} {1}", a.FirstName, a.LastName);
 
+            DateTime? LastActivity;
+            using (StravaEntities context = new StravaEntities()) {
+                LastActivity = (from v in context.Activities select v.TimeStarted).Max();               
+            }
+            if (!LastActivity.HasValue) {
+                LastActivity = DateTime.Parse("2000-01-01");
+            }
+
             #region Activities
 
-            var activities = client.Activities.GetActivities(new DateTime(2011, 11, 1), DateTime.Now);
-
-            //var activitiesAsync = await client.Activities.GetActivitiesAsync(new DateTime(2014, 1, 1), DateTime.Now);
-
+            var activities = client.Activities.GetActivities(LastActivity.Value, DateTime.Now).Take(10).OrderBy(activity  => activity.StartDate);
+            
             using (StravaEntities context = new StravaEntities())
             {
                 foreach (var item in activities)
@@ -64,8 +71,14 @@ namespace StravaConsole
                     act.AverageCadence = (decimal)item.AverageCadence;
                     act.AverageHeartRate = (decimal)item.AverageHeartrate;
                     act.TimeStarted = item.DateTimeStart;
+                    //act.TimeEnded = item.DateTimeStart
                     //act.TimeEnded = item.
                     //act.TimeEnded = item.DateTimeStart + item.tim
+                    act.ElevationGain = (decimal)item.ElevationGain;
+                    act.ElapsedSeconds = item.ElapsedTime;
+                    act.MovingSeconds = item.MovingTime;
+                    act.TimeEnded = act.TimeStarted.Value.AddSeconds(act.ElapsedSeconds.Value);
+                    
 
                     var gear = (from g in context.Gears where g.GearId == item.GearId select g).FirstOrDefault();
 
@@ -102,12 +115,35 @@ namespace StravaConsole
                         context.Activities.Add(act);
 
                     context.SaveChanges();
+
+                    List<ActivityLap> laps = await client.Activities.GetActivityLapsAsync(act.ActivityId.ToString());
+
+                    context.Laps.RemoveRange(context.Laps.Where(x => x.ActivityId == act.ActivityId));
+                    context.SaveChanges();
+
+                    foreach (var lap in laps)
+                    {
+                        Lap l = new Lap();
+                        l.ActivityId = act.ActivityId;
+                        l.LapId = lap.LapIndex;
+                        l.Id = (int)lap.Id;
+                        l.Start = lap.Start;
+                        l.ElapsedTime = lap.ElapsedTime;
+                        l.MovingTime = lap.MovingTime;
+                        l.TotalElevationGain = (decimal)lap.TotalElevationGain;
+                        //l.StartLocal = lap.StartLocal;
+                        l.StartIndex = lap.StartIndex;
+                        l.EndIndex = lap.EndIndex;
+                        l.MaxHeartRate = (decimal)lap.MaxHeartrate;
+                        l.MaxSpeed = (decimal)lap.MaxSpeed;
+                        l.Distance = (decimal)lap.Distance;
+                        context.Laps.Add(l);
+                        context.SaveChanges();
+                    }
                     Console.WriteLine(DateConverter.ConvertIsoTimeToDateTime(item.StartDateLocal));
                 }
             }
 
-
-            Console.WriteLine("Sync: " + activities.Count);
             //Console.WriteLine("Async: " + activitiesAsync.Count);
 
             #endregion
